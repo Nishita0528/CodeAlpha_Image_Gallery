@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Art Gallery</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 40px;
+            margin-top: 20px;
+            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
+        }
+        /* AI Artist Persona */
+        .ai-artist {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            width: 120px;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .ai-message {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        /* Art Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 80%;
+            margin: auto;
+        }
+
+        /* Image Box */
+        .art-box {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .art-box img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* 3D Zoom Effect */
+        .art-box:hover img {
+            transform: scale(1.05) rotateX(10deg);
+            box-shadow: 0px 8px 20px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Click Animation */
+        .art-box:active {
+            transform: scale(0.95);
+            animation: lightFlash 0.4s ease-out;
+        }
+
+        /* Description Pop-up */
+        .description {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            transition: bottom 0.5s ease-in-out;
+        }
+
+        .art-box:hover .description {
+            bottom: 0;
+        }
+
+        /* Light Reflection Animation */
+        @keyframes lightFlash {
+            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+        }
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 60%;
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Floating Butterflies - Random Motion */
+        .butterfly {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            opacity: 1;
+            animation: flyRandom 8s linear infinite;
+        }
+
+        @keyframes flyRandom {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            25% { transform: translate(50vw, 30vh) rotate(15deg); }
+            50% { transform: translate(-30vw, 60vh) rotate(-10deg); }
+            75% { transform: translate(40vw, -20vh) rotate(20deg); }
+            100% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+        }
+        /* Multiple Butterflies */
+        .butterfly:nth-child(2) { animation-duration: 5s; left: 10vw; top: 20vh; }
+        .butterfly:nth-child(3) { animation-duration: 5s; left: 30vw; top: 50vh; }
+        .butterfly:nth-child(4) { animation-duration: 5s; left: 50vw; top: 10vh; }
+        .butterfly:nth-child(5) { animation-duration: 5s; left: 70vw; top: 40vh; }        
+        }
+
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .robot-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            color: white;
+            opacity: 0;
+            animation: appear 6s infinite;
+        }
+
+        @keyframes appear {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Slideshow */
+        .slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.2;
+            background-size: cover;
+            background-position: center;
+            animation: slideShow 20s infinite;
+        }
+
+        @keyframes slideShow {
+           0% { background-image: url('https://source.unsplash.com/1600x900/?art,abstract'); }
+           11% { background-image: url('https://source.unsplash.com/1600x900/?cyberpunk,city'); }
+           22% { background-image: url('https://source.unsplash.com/1600x900/?anime,illustration'); }
+           33% { background-image: url('https://source.unsplash.com/1600x900/?watercolor,painting'); }
+           44% { background-image: url('https://source.unsplash.com/1600x900/?Oil Painting Art'); }
+           55% { background-image: url('https://source.unsplash.com/1600x900/?Pastels Art'); }
+           66% { background-image: url('https://source.unsplash.com/1600x900/?Watercolour Art'); }
+           77% { background-image: url('https://source.unsplash.com/1600x900/?Dry Painting Art'); }
+           100% { background-image: url('https://source.unsplash.com/1600x900/?Digital Art'); }
+        }
+        /* Dynamic Weather Effects */
+        .weather-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+        }
+
+        .weather-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+
+    </style>
+</head>
+    <h1>🎨 AI Art Gallery</h1>
+    <canvas class="weather-effect"></canvas>
+    <button class="weather-toggle" onclick="toggleWeather()">Toggle Weather</button>
+
+    <div class="gallery">
+        <!-- 9 Artworks -->
+        <div class="art-box"><img src="tech1.png" alt="Cyberpunk Art"><div class="description">A futuristic cyberpunk city with neon colors and deep shadows.</div></div>
+        <div class="art-box"><img src="tech2.png" alt="Anime Art"><div class="description">Soft watercolor painting of a serene landscape.</div></div>
+        <div class="art-box"><img src="tech3.png" alt="Watercolor Art"><div class="description">A beautiful hand-drawn anime character with vibrant colors.</div></div>
+        <div class="art-box"><img src="tech4.png" alt="Fantasy Art"><div class="description">A classical oil painting with deep and rich textures.</div></div>
+        <div class="art-box"><img src="tech5.png" alt="Abstract Art"><div class="description">An abstract painting filled with deep emotions.</div></div>
+        <div class="art-box"><img src="tech6.png" alt="Oil Painting"><div class="description">A magical fantasy world full of mystical creatures.</div></div>
+        <div class="art-box"><img src="tech7.png" alt="Pastel Art"><div class="description">A delicate pastel artwork with soft, vibrant hues.</div></div>
+        <div class="art-box"><img src="tech8.png" alt="Digital Art"><div class="description">A modern digital painting with high detail and clarity.</div></div>
+        <div class="art-box"><img src="tech9.png" alt="Surreal Art"><div class="description">A surrealistic masterpiece bending the laws of reality.</div></div>
+    </div>
+
+    <!-- Floating Elements -->
+    <video class="butterfly" autoplay loop muted>
+    <source src="gif.mp4" type="video/mp4">
+    </video>
+    <video class="butterfly" autoplay loop muted>
+    <source src="gif.mp4" type="video/mp4">
+    </video>
+    <video class="butterfly" autoplay loop muted>
+    <source src="gif.mp4" type="video/mp4">
+    </video>
+    <video class="butterfly" autoplay loop muted>
+    <source src="gif.mp4" type="video/mp4">
+    </video>
+    <video class="butterfly" autoplay loop muted>
+    <source src="gif.mp4" type="video/mp4">
+    </video>    
+    <div class="robot-message">
+        Hi!<br>Welcome to the Magical Kingdom of AI Image Gallery
+    </div>
+
+
+    <!-- Slideshow Background -->
+    <div class="slideshow"></div>
+
+    <!-- AI Artist Persona -->
+    <img src="ai.png" alt="AI Artist" class="ai-artist" onclick="showMessage()">
+    <div class="ai-message" id="aiMessage">Hello! I am your AI artist. Click me for art facts! 🎨</div>
+
+    <script>
+        function createRipple(event) {
+            const box = event.currentTarget;
+            const ripple = document.createElement("span");
+            ripple.classList.add("ripple");
+            
+            const rect = box.getBoundingClientRect();
+            ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+            ripple.style.left = event.clientX - rect.left - ripple.offsetWidth / 2 + 'px';
+            ripple.style.top = event.clientY - rect.top - ripple.offsetHeight / 2 + 'px';
+            
+            box.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+        // Dynamic Weather Effect
+        let weatherCanvas = document.querySelector(".weather-effect");
+        let ctx = weatherCanvas.getContext("2d");
+        let particles = [];
+        let weatherType = "rain";
+
+        function resizeCanvas() {
+            weatherCanvas.width = window.innerWidth;
+            weatherCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    speed: Math.random() * 3 + 2,
+                    size: Math.random() * 3 + 1
+                });
+            }
+        }
+        createParticles();
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, weatherCanvas.width, weatherCanvas.height);
+            ctx.fillStyle = weatherType === "snow" ? "white" : "rgba(173, 216, 230, 0.7)";
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                p.y += p.speed;
+                if (p.y > window.innerHeight) p.y = 0;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        function toggleWeather() {
+            if (weatherType === "rain") {
+                weatherType = "snow";
+            } else if (weatherType === "snow") {
+                weatherType = "stars";
+                ctx.fillStyle = "yellow";
+            } else {
+                weatherType = "rain";
+            }
+            createParticles();
+        }
+        function showMessage() {
+            const messages = [
+                "Did you know? AI can create art in the style of Van Gogh!",
+                "AI-generated art has sold for over $400,000!",
+                "Neural networks learn styles from famous artists!",
+                "Your imagination + AI = Infinite possibilities!",
+                "AI doesn’t replace artists—it enhances creativity!"
+            ];
+            
+            let messageBox = document.getElementById("aiMessage");
+            messageBox.innerText = messages[Math.floor(Math.random() * messages.length)];
+            messageBox.style.display = "block";
+            setTimeout(() => { messageBox.style.display = "none"; }, 4000);
+        }
+    </script>
+</body>
+</html>
